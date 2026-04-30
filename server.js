@@ -33,9 +33,15 @@ const startServer = async () => {
 
     // Enable CORS
     app.use(cors({
-      origin: CLIENT_URL,
-      credentials: true,
+      origin: [
+        "http://localhost:5173",
+        "https://task-manager-phi-amber-10.vercel.app"
+      ],
+      credentials: true
     }));
+    
+    // Handle preflight requests
+    app.options("*", cors());
 
     // Set security headers
     app.use(helmet());
