@@ -26,6 +26,7 @@ const startServer = async () => {
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`Mongo URI: ${maskMongoUri(process.env.MONGO_URI)}`);
 
+    // Only proceed if DB connects successfully
     await connectDB();
 
     // Body parser
@@ -63,8 +64,8 @@ const startServer = async () => {
       console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
     });
   } catch (error) {
-    console.error('Server startup failed because MongoDB could not connect.');
-    console.error('Check MONGO_URI, MongoDB auth credentials, network access, and IP whitelist settings.');
+    console.error('Server startup failed due to an error:');
+    console.error(error);
     process.exit(1);
   }
 };
