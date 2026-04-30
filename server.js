@@ -40,9 +40,6 @@ const startServer = async () => {
       ],
       credentials: true
     }));
-    
-    // Handle preflight requests
-    app.options("*", cors());
 
     // Set security headers
     app.use(helmet());
