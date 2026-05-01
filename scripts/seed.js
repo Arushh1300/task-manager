@@ -1,105 +1,135 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const connectDB = require('../config/db');
 const User = require('../models/User');
 const Project = require('../models/Project');
 const Task = require('../models/Task');
 
+// Load environment variables
 dotenv.config();
-
-const demoUser = {
-  name: 'Demo Admin',
-  email: 'demo@example.com',
-  password: 'password123',
-  role: 'admin',
-};
-
-const addDays = (days) => {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return date;
-};
 
 const seed = async () => {
   try {
-    await connectDB();
+    // Connect to MongoDB
+    await mongoose.connect(process.env.MONGO_URI);
+    
+    // 6. Delete existing users, projects, and tasks
+    await Task.deleteMany({});
+    await Project.deleteMany({});
+    await User.deleteMany({});
+    
+    // 2. Create Users
+    // Admin
+    const adminUser = await User.create({
+      name: 'Admin User',
+      email: 'admin@example.com',
+      password: 'password123',
+      role: 'admin'
+    });
+    console.log('Admin created');
 
-    const existingDemoUser = await User.findOne({ email: demoUser.email });
+    // Member
+    const memberUser = await User.create({
+      name: 'Member User',
+      email: 'member@example.com',
+      password: 'password123',
+      role: 'member'
+    });
+    console.log('Member created');
 
-    if (existingDemoUser) {
-      const demoProjects = await Project.find({ createdBy: existingDemoUser._id }).select('_id');
-      await Task.deleteMany({ projectId: { $in: demoProjects.map((project) => project._id) } });
-      await Project.deleteMany({ createdBy: existingDemoUser._id });
-      await User.deleteOne({ _id: existingDemoUser._id });
-    }
-
-    const user = await User.create(demoUser);
-
-    const projects = await Project.insertMany([
+    // 4. Create Demo Projects
+    const projects = await Project.create([
       {
-        name: 'Website Launch',
-        description: 'Coordinate final design, content, and QA tasks for the public launch.',
-        members: [user._id],
-        createdBy: user._id,
+        name: 'Website Redesign',
+        description: 'Complete overhaul of the corporate website focusing on user experience.',
+        createdBy: adminUser._id,
+        members: [adminUser._id, memberUser._id]
       },
       {
-        name: 'Product Ops',
-        description: 'Track recurring product operations, analytics, and customer follow-ups.',
-        members: [user._id],
-        createdBy: user._id,
+        name: 'Mobile App',
+        description: 'Development of the new iOS and Android mobile application.',
+        createdBy: adminUser._id,
+        members: [adminUser._id, memberUser._id]
       },
+      {
+        name: 'Marketing Campaign',
+        description: 'Q3 digital marketing initiatives and content creation.',
+        createdBy: adminUser._id,
+        members: [adminUser._id, memberUser._id]
+      }
     ]);
+    console.log('Projects seeded');
 
-    await Task.insertMany([
+    // Helper for generating dates
+    const addDays = (days) => {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d;
+    };
+
+    // 5. Create tasks for each project
+    // Note: The Task schema enum expects 'todo', 'in-progress', 'done'. 
+    // Using 'todo' for pending and 'done' for completed to avoid validation errors.
+    await Task.create([
+      // Website Redesign Tasks
       {
-        title: 'Finalize landing page copy',
-        description: 'Tighten the hero copy and review CTA language.',
-        status: 'done',
-        assignedTo: user._id,
+        title: 'Design Mockups',
+        description: 'Create Figma designs for the homepage and about page.',
         projectId: projects[0]._id,
-        dueDate: addDays(-2),
+        assignedTo: memberUser._id,
+        dueDate: addDays(-2), // Past due date
+        status: 'done'
       },
       {
-        title: 'Run responsive QA',
-        description: 'Check mobile and desktop layouts before demo.',
-        status: 'in-progress',
-        assignedTo: user._id,
+        title: 'Frontend Implementation',
+        description: 'Convert mockups to responsive React components.',
         projectId: projects[0]._id,
+        assignedTo: memberUser._id,
+        dueDate: addDays(5), // Future due date
+        status: 'todo'
+      },
+      // Mobile App Tasks
+      {
+        title: 'API Integration',
+        description: 'Connect mobile app with backend REST services.',
+        projectId: projects[1]._id,
+        assignedTo: memberUser._id,
+        dueDate: addDays(10),
+        status: 'in-progress'
+      },
+      {
+        title: 'App Store Submission',
+        description: 'Prepare assets and metadata for App Store review.',
+        projectId: projects[1]._id,
+        assignedTo: memberUser._id,
+        dueDate: addDays(20),
+        status: 'todo'
+      },
+      // Marketing Campaign Tasks
+      {
+        title: 'Social Media Assets',
+        description: 'Design banners for Facebook, Twitter, and LinkedIn.',
+        projectId: projects[2]._id,
+        assignedTo: memberUser._id,
+        dueDate: addDays(-5), // Past due date
+        status: 'done'
+      },
+      {
+        title: 'Launch Email Campaign',
+        description: 'Send out the weekly newsletter to the subscriber list.',
+        projectId: projects[2]._id,
+        assignedTo: memberUser._id,
         dueDate: addDays(2),
-      },
-      {
-        title: 'Prepare launch checklist',
-        description: 'Confirm analytics, redirects, and production env values.',
-        status: 'todo',
-        assignedTo: user._id,
-        projectId: projects[0]._id,
-        dueDate: addDays(5),
-      },
-      {
-        title: 'Review overdue customer tasks',
-        description: 'Prioritize overdue follow-ups for this week.',
-        status: 'todo',
-        assignedTo: user._id,
-        projectId: projects[1]._id,
-        dueDate: addDays(-1),
-      },
-      {
-        title: 'Publish weekly dashboard',
-        description: 'Share team progress metrics with stakeholders.',
-        status: 'in-progress',
-        assignedTo: user._id,
-        projectId: projects[1]._id,
-        dueDate: addDays(1),
-      },
+        status: 'todo'
+      }
     ]);
+    console.log('Tasks seeded');
 
-    console.log('Demo data seeded successfully.');
-    console.log('Login with demo@example.com / password123');
+    // 8. Final output
+    console.log('Demo database seeded successfully');
+    process.exit(0);
   } catch (error) {
-    console.error('Seeding failed:', error);
-    process.exitCode = 1;
-  } finally {
-    await mongoose.connection.close();
+    console.error('Error seeding data:', error);
+    process.exit(1);
   }
 };
 

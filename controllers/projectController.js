@@ -30,6 +30,10 @@ const createProject = async (req, res, next) => {
 // @access  Private
 const getProjects = async (req, res, next) => {
   try {
+    console.log("User:", req.user);
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
     // Admins can see all, members see where they are members or creator
     let projects;
     if (req.user.role === 'admin') {
@@ -49,7 +53,28 @@ const getProjects = async (req, res, next) => {
   }
 };
 
+// @desc    Delete project
+// @route   DELETE /api/projects/:id
+// @access  Private/Admin
+const deleteProject = async (req, res, next) => {
+  try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      res.status(404);
+      throw new Error('Project not found');
+    }
+
+    await project.deleteOne();
+
+    res.status(200).json({ message: 'Project removed' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createProject,
   getProjects,
+  deleteProject,
 };

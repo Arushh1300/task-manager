@@ -60,6 +60,11 @@ const updateTask = async (req, res, next) => {
       throw new Error('Task not found');
     }
 
+    if (req.user.role !== 'admin' && task.assignedTo.toString() !== req.user.id) {
+      res.status(403);
+      throw new Error('Forbidden: Not authorized to update this task');
+    }
+
     const updatedTask = await Task.findByIdAndUpdate(
       req.params.id,
       req.body,
