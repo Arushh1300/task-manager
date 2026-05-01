@@ -49,6 +49,15 @@ const startServer = async () => {
       app.use(morgan('dev'));
     }
 
+    // Root and Health Check Routes
+    app.get('/', (req, res) => {
+      res.send('API is running 🚀');
+    });
+
+    app.get('/api/health', (req, res) => {
+      res.json({ status: 'ok', message: 'Server is healthy' });
+    });
+
     // Routes
     app.use('/api/auth', require('./routes/authRoutes'));
     app.use('/api/projects', require('./routes/projectRoutes'));

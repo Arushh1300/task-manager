@@ -34,16 +34,16 @@ A full-stack MERN application for managing team projects and tasks with secure a
 
 ### 👥 Role-Based Access Control (RBAC)
 
-* **Admin**
+#### Admin
 
-  * Create/Delete Projects
-  * Create/Delete Tasks
-  * Assign tasks to users
+* Create/Delete Projects
+* Create/Delete Tasks
+* Assign tasks to users
 
-* **Member**
+#### Member
 
-  * View projects & assigned tasks
-  * Update only assigned task status
+* View projects & assigned tasks
+* Update only assigned task status
 
 ---
 
@@ -73,25 +73,62 @@ A full-stack MERN application for managing team projects and tasks with secure a
 
 ---
 
-## 🧪 How to Test
+## 🧪 How to Test (Step-by-Step)
 
 1. Open the frontend link
-2. Login using **Admin credentials**
+2. Login as **Admin**
 
    * Create projects and tasks
-3. Logout and login as **Member**
+3. Logout
+4. Login as **Member**
 
-   * Verify restricted access
-4. Update task status as assigned user
+   * Verify restricted access (no create/delete options)
+5. Update task status as assigned user
+
+---
+
+## 🔗 API Information
+
+* All backend endpoints are available under `/api`
+* Example routes:
+
+  * `/api/auth`
+  * `/api/projects`
+  * `/api/tasks`
+
+---
+
+## 💡 Backend Status
+
+* The backend is an API service
+* Visiting the root URL (`/`) shows a status message
+* APIs are accessible via `/api` routes
+
+---
+
+## ❤️ Health Check
+
+```bash
+GET /api/health
+```
+
+Response:
+
+```json
+{
+  "status": "ok",
+  "message": "Server is healthy"
+}
+```
 
 ---
 
 ## ⚠️ Notes
 
 * Backend deployed on Railway (as required)
-* Frontend deployed on Vercel for optimal performance
+* Frontend deployed on Vercel for optimized performance
 * This is a functional MVP (prototype) with RBAC
-* Production-level security enhancements can be added in future iterations
+* Production-level security improvements can be added in future iterations
 
 ---
 
@@ -119,8 +156,8 @@ npm run dev
 Create `.env` file in backend:
 
 ```env
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+MONGO_URI=your_mongodb_connection_string  
+JWT_SECRET=your_secret_key  
 ```
 
 ---
