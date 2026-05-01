@@ -12,6 +12,8 @@ const Sidebar = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
+  if (!user) return null;
+
   const handleLogout = () => {
     logout();
     navigate('/login');

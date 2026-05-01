@@ -6,7 +6,8 @@ import {
   Search, 
   CheckCircle2, 
   MoreVertical,
-  Calendar
+  Calendar,
+  Trash2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import EmptyState from '../components/EmptyState';
@@ -68,6 +69,18 @@ const Tasks = () => {
     }
   };
 
+  const handleDeleteTask = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this task?')) return;
+    const loadingToast = toast.loading('Deleting task...');
+    try {
+      await api.delete(`/tasks/${id}`);
+      fetchData();
+      toast.success('Task deleted successfully!', { id: loadingToast });
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Error deleting task'), { id: loadingToast });
+    }
+  };
+
   const handleCreateTask = async (e) => {
     e.preventDefault();
     const loadingToast = toast.loading('Creating task...');
@@ -102,6 +115,7 @@ const Tasks = () => {
   };
 
   if (loading) return <Loader label="Loading tasks..." />;
+  if (!user) return null;
 
   return (
     <div>
@@ -115,13 +129,15 @@ const Tasks = () => {
             </p>
           )}
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center bg-primary-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-primary-700 shadow-lg shadow-primary-500/20 transition-all active:scale-95"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          New Task
-        </button>
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center bg-primary-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-primary-700 shadow-lg shadow-primary-500/20 transition-all active:scale-95"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            New Task
+          </button>
+        )}
       </div>
 
       <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
@@ -225,15 +241,26 @@ const Tasks = () => {
                       <select
                         value={task.status}
                         onChange={(e) => handleUpdateStatus(task._id, e.target.value)}
-                        className="text-xs font-bold bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-1.5 outline-none focus:ring-2 focus:ring-primary-500 transition-all cursor-pointer dark:text-white"
+                        disabled={user?.role !== 'admin' && task.assignedTo?._id !== user?._id}
+                        className="text-xs font-bold bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-1.5 outline-none focus:ring-2 focus:ring-primary-500 transition-all cursor-pointer dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <option value="todo">Todo</option>
                         <option value="in-progress">In Progress</option>
                         <option value="done">Done</option>
                       </select>
-                      <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <MoreVertical className="w-4 h-4" />
-                      </button>
+                      {user?.role === 'admin' ? (
+                        <button 
+                          onClick={() => handleDeleteTask(task._id)}
+                          className="text-red-400 hover:text-red-600 dark:hover:text-red-300 p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          title="Delete Task"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -247,13 +274,15 @@ const Tasks = () => {
                 title="No tasks yet"
                 description="Create a task to assign work, track status, and monitor deadlines."
                 action={
-                  <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="inline-flex items-center rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary-500/20 transition hover:bg-primary-700"
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    New Task
-                  </button>
+                  user?.role === 'admin' && (
+                    <button
+                      onClick={() => setIsModalOpen(true)}
+                      className="inline-flex items-center rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary-500/20 transition hover:bg-primary-700"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      New Task
+                    </button>
+                  )
                 }
               />
             </div>
