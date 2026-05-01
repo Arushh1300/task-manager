@@ -1,62 +1,134 @@
-# Team Task Manager Backend
+# 🚀 Team Task Manager (TaskFlow)
 
-A production-ready Node.js/Express/MongoDB backend for a Team Task Management application.
+A full-stack MERN application for managing team projects and tasks with secure authentication and role-based access control (RBAC).
 
-## Tech Stack
-- **Node.js** & **Express.js**
-- **MongoDB** with **Mongoose**
-- **JWT** for Authentication
-- **Bcrypt.js** for Password Hashing
-- **Helmet** & **CORS** for Security
-- **Morgan** for Logging
+---
 
-## Folder Structure
+## 🌐 Live Demo
+
+* **Frontend:** https://task-manager-phi-amber-10.vercel.app/
+* **Backend:** https://task-manager-production-8a76.up.railway.app/
+
+---
+
+## 🔐 Demo Credentials
+
+### 👑 Admin
+
+* Email: [admin@example.com](mailto:admin@example.com)
+* Password: password123
+
+### 👤 Member
+
+* Email: [member@example.com](mailto:member@example.com)
+* Password: password123
+
+---
+
+## 🧠 Features
+
+### 🔐 Authentication
+
+* JWT-based Login & Signup
+* Secure password hashing (bcrypt)
+
+### 👥 Role-Based Access Control (RBAC)
+
+* **Admin**
+
+  * Create/Delete Projects
+  * Create/Delete Tasks
+  * Assign tasks to users
+
+* **Member**
+
+  * View projects & assigned tasks
+  * Update only assigned task status
+
+---
+
+## 📊 Core Modules
+
+* 📁 Project Management
+* ✅ Task Management
+* 📈 Dashboard (task statistics)
+* 🔒 Protected Routes
+* 🔗 API Integration with Axios
+
+---
+
+## ⚙️ Tech Stack
+
+### Frontend
+
+* React (Vite)
+* Tailwind CSS
+* Axios
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB (Mongoose)
+
+---
+
+## 🧪 How to Test
+
+1. Open the frontend link
+2. Login using **Admin credentials**
+
+   * Create projects and tasks
+3. Logout and login as **Member**
+
+   * Verify restricted access
+4. Update task status as assigned user
+
+---
+
+## ⚠️ Notes
+
+* Backend deployed on Railway (as required)
+* Frontend deployed on Vercel for optimal performance
+* This is a functional MVP (prototype) with RBAC
+* Production-level security enhancements can be added in future iterations
+
+---
+
+## 📦 Local Setup
+
+### Backend
+
+```bash
+npm install
+npm run dev
 ```
-├── config/             # Database configuration
-├── controllers/        # Business logic for routes
-├── middleware/         # Auth and Error handling middleware
-├── models/             # Mongoose schemas
-├── routes/             # API route definitions
-├── .env                # Environment variables
-├── server.js           # Entry point
-└── package.json        # Dependencies and scripts
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-## Setup & Installation
+---
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+## 🔑 Environment Variables
 
-2. Configure Environment Variables:
-   Create a `.env` file in the root directory (already created for you) and update the values:
-   ```env
-   PORT=5000
-   MONGODB_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
-   NODE_ENV=development
-   ```
+Create `.env` file in backend:
 
-3. Run the server:
-   - Development mode: `npm run dev`
-   - Production mode: `npm start`
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+```
 
-## API Endpoints
+---
 
-### Auth
-- `POST /api/auth/signup`: Register a new user
-- `POST /api/auth/login`: Authenticate user and get token
+## 👨‍💻 Author
 
-### Projects
-- `POST /api/projects`: Create a new project (Admin only)
-- `GET /api/projects`: Get projects relevant to the user
+**Arush Dwivedi**
 
-### Tasks
-- `POST /api/tasks`: Create a new task (Admin only)
-- `GET /api/tasks`: Get tasks (Filter by project/user via query params)
-- `PUT /api/tasks/:id`: Update task status or assignment
-- `DELETE /api/tasks/:id`: Delete a task (Admin only)
+---
 
-## Deployment (Railway)
-This project is configured for deployment on Railway. Simply connect your GitHub repository, and it will automatically detect the `npm start` script.
+## ⭐ If you like this project, give it a star!
