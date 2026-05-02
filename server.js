@@ -40,6 +40,7 @@ const startServer = async () => {
       ],
       credentials: true
     }));
+    app.options('*', cors());
 
     // Set security headers
     app.use(helmet());
