@@ -38,7 +38,6 @@ const startServer = async () => {
         "http://localhost:5173",
         "https://task-manager-phi-amber-10.vercel.app"
       ],
-      credentials: true
     }));
 
 
